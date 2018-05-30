@@ -1,5 +1,4 @@
 // Enemies our player must avoid
-
 var Enemy = function(x, y) {
 
     // Variables applied to each of our instances go here,
@@ -9,7 +8,7 @@ var Enemy = function(x, y) {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
-    this.y = y
+    this.y = y;
 
     this.bugMoves = function (min, max) {
         return Math.random() * (max - min) + min;
@@ -18,7 +17,9 @@ var Enemy = function(x, y) {
       this.positionY = possibleY[Math.floor(Math.random() * possibleY.length)];
 this.velocity = this.bugMoves(50,300);
 
-
+this.getPosition = function(){
+  return {x: this.x, y: this.positionY};
+}
 };
 
 
@@ -26,7 +27,9 @@ var Player = function(x,y) {
   this.sprite = 'images/char-boy.png'
   this.x = x;
   this.y = y;
-
+  this.getPlayerPosition = function(){
+    return {x: this.x, y: this.y};
+  }
 }
 
 // Update the enemy's position, required method for game
@@ -36,7 +39,7 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 this.x += this.velocity * dt;
-//movement
+
 };
 
 // Draw the enemy on the screen, required method for game
@@ -44,11 +47,9 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.positionY);
 };
 
+
 Player.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    //console.log('updatePlayer');
+  let player = {x:this.x, y:this.y};
 };
 
 Player.prototype.render = function() {
@@ -69,6 +70,7 @@ Player.prototype.handleInput = function(){
     else if(this.y !== 400 && event.keyCode == 40){
       this.y += 85;
     }
+    player.getPlayerPosition();
 };
 // Now write your own player class
 // This class requires an update(), render() and
@@ -79,13 +81,14 @@ Player.prototype.handleInput = function(){
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 const allEnemies = [];
-allEnemies.push(new Enemy(-100, this.positionY));
+let enemy = new Enemy(-100, this.positionY);
+allEnemies.push(enemy);
 
 
 setInterval(function(){
    allEnemies.push(new Enemy(-100, this.positionY));
  }, 2000);
-let player = new Player(200,400);
+let player = new Player(200,390);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -99,3 +102,14 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+let checkCollisions = function(){
+    allEnemies.map(enemy => {
+      enemy.getPosition();
+    })
+
+player.getPlayerPosition();
+
+
+console.log(player.y == enemy.positionY && player.x == enemy.x);
+};
