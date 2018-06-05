@@ -10,27 +10,33 @@ var Enemy = function(x, y) {
     this.x = x;
     this.y = y;
 
-    this.bugMoves = function (min, max) {
+    this.bugMoves = function(min, max) {
         return Math.random() * (max - min) + min;
-      };
-      const possibleY = [50,135,220];
-      this.positionY = possibleY[Math.floor(Math.random() * possibleY.length)];
-this.velocity = this.bugMoves(50,300);
+    };
+    const possibleY = [50, 135, 220];
+    this.y = possibleY[Math.floor(Math.random() * possibleY.length)];
+    this.velocity = this.bugMoves(100, 300);
 
-this.getPosition = function(){
-  return {x: this.x, y: this.positionY};
-}
+    this.getPosition = function() {
+        return {
+            x: this.x,
+            y: this.y
+        };
+    };
 };
 
 
-var Player = function(x,y) {
-  this.sprite = 'images/char-boy.png'
-  this.x = x;
-  this.y = y;
-  this.getPlayerPosition = function(){
-    return {x: this.x, y: this.y};
-  }
-}
+var Player = function(x, y) {
+    this.sprite = 'images/char-boy.png';
+    this.x = x;
+    this.y = y;
+    this.getPlayerPosition = function() {
+        return {
+            x: this.x,
+            y: this.y
+        };
+    };
+};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -38,37 +44,37 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-this.x += this.velocity * dt;
+    this.x += this.velocity * dt;
 
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.positionY);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 
 Player.prototype.update = function(dt) {
-  let player = {x:this.x, y:this.y};
+    let player = {
+        x: this.x,
+        y: this.y
+    };
 };
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-Player.prototype.handleInput = function(){
+Player.prototype.handleInput = function() {
 
-    if(this.x !== 0 && event.keyCode == 37) {
+    if (this.x !== 0 && event.keyCode == 37) {
         this.x -= 100;
-    }
-    else if(this.y !== (-25) && event.keyCode == 38) {
-      this.y -= 85;
-    }
-    else if(this.x !== 400 && event.keyCode == 39){
-      this.x += 100;
-    }
-    else if(this.y !== 400 && event.keyCode == 40){
-      this.y += 85;
+    } else if (this.y !== (-35) && event.keyCode == 38) {
+        this.y -= 85;
+    } else if (this.x !== 400 && event.keyCode == 39) {
+        this.x += 100;
+    } else if (this.y !== 390 && event.keyCode == 40) {
+        this.y += 85;
     }
     player.getPlayerPosition();
 };
@@ -80,15 +86,15 @@ Player.prototype.handleInput = function(){
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-const allEnemies = [];
-let enemy = new Enemy(-100, this.positionY);
+let allEnemies = [];
+let enemy = new Enemy(-100, this.y);
 allEnemies.push(enemy);
 
 
-setInterval(function(){
-   allEnemies.push(new Enemy(-100, this.positionY));
- }, 2000);
-let player = new Player(200,390);
+setInterval(function() {
+    allEnemies.push(new Enemy(-100, this.y));
+}, 2000);
+let player = new Player(200, 390);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -103,13 +109,27 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-let checkCollisions = function(){
+//checks collisions and filters out enemies that are out of canvas
+let checkCollisions = function() {
     allEnemies.map(enemy => {
-      enemy.getPosition();
-    })
+        enemy.getPosition();
+        if (enemy.x > 505) {
+            allEnemies = allEnemies.filter(enemy => enemy.x < 550);
+        }
+        if (enemy.x >= player.x - 70 && enemy.x <= player.x + 50 && enemy.y === player.y) {
+            setTimeout(function() {
+                player.x = 200;
+                player.y = 390;
+            }, 100);
+        }
+    });
+    //winning mechanics
+    if (player.y === -35) {
+        setTimeout(function() {
+            player.x = 200;
+            player.y = 390;
+            alert('congrats, you won!');
+        }, 1);
+    }
 
-player.getPlayerPosition();
-
-
-console.log(player.y == enemy.positionY && player.x == enemy.x);
 };
