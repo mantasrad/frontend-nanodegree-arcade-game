@@ -10,19 +10,14 @@ var Enemy = function(x, y) {
     this.x = x;
     this.y = y;
 
-    this.bugMoves = function(min, max) {
-        return Math.random() * (max - min) + min;
-    };
     const possibleY = [50, 135, 220];
     this.y = possibleY[Math.floor(Math.random() * possibleY.length)];
     this.velocity = this.bugMoves(100, 300);
 
-    this.getPosition = function() {
-        return {
-            x: this.x,
-            y: this.y
-        };
-    };
+};
+
+Enemy.prototype.bugMoves = function(min,max){
+  return Math.random() * (max - min) + min;
 };
 
 
@@ -30,12 +25,6 @@ var Player = function(x, y) {
     this.sprite = 'images/char-boy.png';
     this.x = x;
     this.y = y;
-    this.getPlayerPosition = function() {
-        return {
-            x: this.x,
-            y: this.y
-        };
-    };
 };
 
 // Update the enemy's position, required method for game
@@ -45,6 +34,17 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += this.velocity * dt;
+    allEnemies.map(enemy => {
+        if (this.x > 505) {
+            allEnemies = allEnemies.filter(enemy => enemy.x < 550);
+        }
+        if (this.x >= player.x - 70 && this.x <= player.x + 50 && this.y === player.y) {
+            setTimeout(function() {
+                player.x = 200;
+                player.y = 390;
+            }, 100);
+        }
+    });
 
 };
 
@@ -55,10 +55,6 @@ Enemy.prototype.render = function() {
 
 
 Player.prototype.update = function(dt) {
-    let player = {
-        x: this.x,
-        y: this.y
-    };
 };
 
 Player.prototype.render = function() {
@@ -76,7 +72,6 @@ Player.prototype.handleInput = function() {
     } else if (this.y !== 390 && event.keyCode == 40) {
         this.y += 85;
     }
-    player.getPlayerPosition();
 };
 // Now write your own player class
 // This class requires an update(), render() and
@@ -109,27 +104,17 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
+
+Player.prototype.winning = function(){
+  if (this.y === -35) {
+      setTimeout(function() {
+          player.x = 200;
+          player.y = 390;
+          alert('congrats, you won!');
+      }, 10)
+  }
+};
 //checks collisions and filters out enemies that are out of canvas
 let checkCollisions = function() {
-    allEnemies.map(enemy => {
-        enemy.getPosition();
-        if (enemy.x > 505) {
-            allEnemies = allEnemies.filter(enemy => enemy.x < 550);
-        }
-        if (enemy.x >= player.x - 70 && enemy.x <= player.x + 50 && enemy.y === player.y) {
-            setTimeout(function() {
-                player.x = 200;
-                player.y = 390;
-            }, 100);
-        }
-    });
-    //winning mechanics
-    if (player.y === -35) {
-        setTimeout(function() {
-            player.x = 200;
-            player.y = 390;
-            alert('congrats, you won!');
-        }, 1);
-    }
-
+    player.winning();
 };

@@ -11,6 +11,8 @@ This is a project for Udacity Front-end Nanodegree cours.
 
 Game logic - player must cross the road and reach the river, while avoiding enemies.
 
+To load the game simply open index.html file in a browser.
+
 Game is played using arrow keys. In case a collision occurs the player is sent back to the starting point.
 
 Due to limited time available no additional features are yet added to this game yet, but there will be more in the future. :)
