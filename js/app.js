@@ -107,9 +107,10 @@ document.addEventListener('keyup', function(e) {
 
 Player.prototype.winning = function(){
   if (this.y === -35) {
+    self = this;
       setTimeout(function() {
-          player.x = 200;
-          player.y = 390;
+          self.x = 200;
+          self.y = 390;
           alert('congrats, you won!');
       }, 10)
   }
